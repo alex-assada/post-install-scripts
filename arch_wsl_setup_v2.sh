@@ -154,6 +154,23 @@ install_packages() {
     sudo pacman -Syu --needed --noconfirm "${packages[@]}"
 }
 
+# Install NvChad
+install_nvchad() {
+    log "Installing NvChad..."
+    
+    local nvim_config="$HOME/.config/nvim"
+
+    if [[ -d "$nvim_config" ]]; then
+        warning "Existing nvim config found at $nvim_config. Backing up..."
+        mv "$nvim_config" "${nvim_config}.backup_$(date +%s)"
+    fi
+
+    git clone https://github.com/NvChad/starter "$nvim_config" --depth 1
+
+    log "Launching Neovim to finalize NvChad setup (plugins installation)..."
+    nvim --headless +PackerSync +qa || log "NvChad plugin installation finished (or skipped errors)"
+}
+
 # Install Homebrew
 install_homebrew() {
     log "Installing Homebrew..."
