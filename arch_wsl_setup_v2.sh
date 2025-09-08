@@ -159,11 +159,17 @@ install_nvchad() {
     log "Installing NvChad..."
 
     local nvim_config="$HOME/.config/nvim"
+    local nvim_backup="$HOME/.config/nvim_nvchad_backup"
 
-    # Backup existing config if it exists
+    # Remove any previous backup to avoid clutter
+    if [[ -d "$nvim_backup" ]]; then
+        rm -rf "$nvim_backup"
+    fi
+
+    # Remove existing config if needed (optional safety)
     if [[ -d "$nvim_config" ]]; then
-        warning "Existing nvim config found at $nvim_config. Backing up..."
-        mv "$nvim_config" "${nvim_config}.backup_$(date +%s)"
+        log "Removing leftover ~/.config/nvim before fresh clone..."
+        rm -rf "$nvim_config"
     fi
 
     # Clone NvChad starter
@@ -173,7 +179,13 @@ install_nvchad() {
     log "Launching Neovim to finalize NvChad setup (plugins installation)..."
     nvim --headless +PackerSync +qa || log "NvChad plugin installation finished (or skipped errors)"
 
-    log "NvChad setup complete!"
+    # Move NvChad config out of the way so stow can take over
+    if [[ -d "$nvim_config" ]]; then
+        log "Moving NvChad config to $nvim_backup to prevent stow conflicts..."
+        mv "$nvim_config" "$nvim_backup"
+    fi
+
+    log "NvChad installed and config moved. Dotfiles can now stow nvim safely."
 }
 
 # Install Homebrew
