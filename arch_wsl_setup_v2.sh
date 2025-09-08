@@ -157,18 +157,23 @@ install_packages() {
 # Install NvChad
 install_nvchad() {
     log "Installing NvChad..."
-    
+
     local nvim_config="$HOME/.config/nvim"
 
+    # Backup existing config if it exists
     if [[ -d "$nvim_config" ]]; then
         warning "Existing nvim config found at $nvim_config. Backing up..."
         mv "$nvim_config" "${nvim_config}.backup_$(date +%s)"
     fi
 
+    # Clone NvChad starter
     git clone https://github.com/NvChad/starter "$nvim_config" --depth 1
 
+    # Launch Neovim headless to install plugins
     log "Launching Neovim to finalize NvChad setup (plugins installation)..."
     nvim --headless +PackerSync +qa || log "NvChad plugin installation finished (or skipped errors)"
+
+    log "NvChad setup complete!"
 }
 
 # Install Homebrew
